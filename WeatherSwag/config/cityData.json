@@ -1,0 +1,57 @@
+[
+	{
+		"name": "San Jose",
+		"zip": "95126",
+		"weather": {
+			"temp": {
+				"value": 54,
+				"units": "°F",
+				"description": "Partly Cloudy"
+			}
+		}
+	},
+	{
+		"name": "Fremont",
+		"zip": "94536",
+		"weather": {
+			"temp": {
+				"value": 12,
+				"units": "°C",
+				"description": "Sunny"
+			}
+		}
+	},
+	{
+		"name": "Fairfield",
+		"zip": "94533",
+		"weather": {
+			"temp": {
+				"value": 68,
+				"units": "°F",
+				"description": "Foggy"
+			}
+		}
+	},
+	{
+		"name": "Fairfax",
+		"zip": "94930",
+		"weather": {
+			"temp": {
+				"value": 20,
+				"units": "°C",
+				"description": "Light Rain"
+			}
+		}
+	},
+	{
+		"name": "Saratoga",
+		"zip": "95070",
+		"weather": {
+			"temp": {
+				"value": 28,
+				"units": "°F",
+				"description": "Light Snow"
+			}
+		}
+	}
+]

@@ -1,0 +1,115 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: WeatherSwag
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /weather/cities:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: cityList
+    get:
+      description: Returns an array of cities matching the query
+      # used as the method name of the controller
+      operationId: queryCities
+      parameters:
+        - name: query
+          in: query
+          description: The partial or full name of a city
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/CitiesResponse"
+        # responses may fall through to errors
+        default:
+          description: Empty Set
+          schema:
+            $ref: "#/definitions/EmptySet"
+  /weather/cities/{zip}:
+    x-swagger-router-controller: weather
+    get:
+      parameters:
+        - name: zip
+          in: path
+          required: true
+          type: string
+      description: Returns a weather object
+      operationId: weather
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/WeatherResponse"
+        default:
+          description: Weather Unavailable
+          schema:
+            $ref: "#/definitions/EmptySet"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  City:
+    type: object
+    required:
+      - name
+      - zip
+    properties:
+      name:
+        type: string
+      zip:
+        type: string
+  CitiesResponse:
+    required:
+      - items
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/City"
+  Temperature:
+    properties:
+      value:
+        type: number
+      units:
+        type: string
+      description:
+        type: string
+  Weather:
+    properties:
+      city:
+        type: string
+      zip:
+        type: string
+      temp:
+        $ref: "#/definitions/Temperature"
+  WeatherResponse:
+    required:
+      - data
+    properties:
+      data:
+        $ref: "#/definitions/Weather"
+  EmptySet:
+    required:
+      - items
+    properties:
+      items:
+        type: array
+        items:
+          type: object
