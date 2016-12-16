@@ -5,9 +5,9 @@
     "weather": {
       "temp": {
         "value": 54,
-        "units": "°F",
-        "description": "Partly Cloudy"
-      }
+        "units": "°F"
+      },
+      "description": "Partly Cloudy"
     }
   },
   {
@@ -16,9 +16,9 @@
     "weather": {
       "temp": {
         "value": 12,
-        "units": "°C",
-        "description": "Sunny"
-      }
+        "units": "°C"
+      },
+      "description": "Sunny"
     }
   },
   {
@@ -27,9 +27,9 @@
     "weather": {
       "temp": {
         "value": 68,
-        "units": "°F",
-        "description": "Foggy"
-      }
+        "units": "°F"
+      },
+      "description": "Foggy"
     }
   },
   {
@@ -38,9 +38,9 @@
     "weather": {
       "temp": {
         "value": 20,
-        "units": "°C",
-        "description": "Light Rain"
-      }
+        "units": "°C"
+      },
+      "description": "Light Rain"
     }
   },
   {
@@ -49,9 +49,9 @@
     "weather": {
       "temp": {
         "value": 28,
-        "units": "°F",
-        "description": "Light Snow"
-      }
+        "units": "°F"
+      },
+      "description": "Light Snow"
     }
   }
 ]
