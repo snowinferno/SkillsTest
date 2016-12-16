@@ -3,6 +3,8 @@ import {
     Card,
     CardHeader,
     CardText,
+    Dialog,
+    FlatButton,
     Paper,
     TextField,
 } from 'material-ui';
@@ -15,10 +17,12 @@ export default class Page extends Component {
           query: '',
           cityList: [],
           weatherList: [],
+          alertOpen: true,
         };
     }
 
     handleInputChange(evt) {
+      this.setState({query: evt.target.value});
       fetch(`/weather/cities?q=${evt.target.value}`, {credentials: 'same-origin'})
         .then((response) => {
           return response.json();
@@ -27,21 +31,24 @@ export default class Page extends Component {
           this.setState({cityList: json.items});
         })
         .catch((err) => {
-          document.write(JSON.stringify(err));
+          console.error(err);
         })
     }
 
     handleItemSelect(zip) {
+      this.setState({query: '', cityList: []})
       fetch(`/weather/cities/${zip}`)
         .then((response) => response.json())
         .then((json) => {
-          console.log(json);
           this.setState({weatherList: [...this.state.weatherList, json.data]})
         })
         .catch((err) => {
-          console.log('err', err);
-          document.write(JSON.stringify(err));
+          console.error(err);
         })
+    }
+
+    handleAlertClose() {
+      this.setState({alertOpen: false});
     }
 
     render() {
@@ -51,6 +58,7 @@ export default class Page extends Component {
             />
             <CardText>
               <TypeaheadInput
+                value={this.state.query}
                 hint="Start typing the name of a city."
                 list={this.state.cityList}
                 handleChange={this.handleInputChange.bind(this)}
@@ -58,37 +66,60 @@ export default class Page extends Component {
               />
               {
                 this.state.weatherList.length > 0 &&
-                this.state.weatherList.map((weatherItem) => {
-                  console.log(weatherItem);
+                this.state.weatherList.map((weatherItem, index) => {
                   return (
                     <Paper key={`${weatherItem.city}-${weatherItem.zip}`}
                       style={{
                         margin: '1em',
                         padding: '1em',
+                        display: 'inline-block',
+                        position: 'relative',
                       }}
                       >
-                      <span>
-                        <strong>{weatherItem.name}</strong> [{weatherItem.zip}]
-                        <table>
-                          <thead>
-                            <tr>
-                              <th>Temperature</th>
-                              <th>Description</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>{`${weatherItem.weather.temp.value}${weatherItem.weather.temp.units}`}</td>
-                              <td>{weatherItem.weather.description}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </span>
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: '0.25em',
+                          right: '0.5em',
+                          cursor: 'pointer',
+                        }}
+                        onClick={(evt) => {
+                          let weatherSet = [...this.state.weatherList.slice(0,index), ...this.state.weatherList.slice(index + 1)];
+                          this.setState({weatherList: weatherSet});
+                        }}
+                        >x</span>
+                      <strong>{weatherItem.name}</strong> [{weatherItem.zip}]
+                      <div style={{display: 'table'}}>
+                        <div style={{display: 'table-row', fontWeight: 'bold'}}>
+                          <div style={{display: 'table-cell', paddingRight: '0.5em'}}>Temperature</div>
+                          <div style={{display: 'table-cell'}}>Description</div>
+                        </div>
+                        <div style={{display: 'table-row'}}>
+                          <div style={{display: 'table-cell', paddingRight: '0.5em'}}>{`${weatherItem.weather.temp.value}${weatherItem.weather.temp.units}`}</div>
+                          <div style={{display: 'table-cell'}}>{weatherItem.weather.description}</div>
+                        </div>
+                      </div>
                     </Paper>
                   )
                 })
               }
             </CardText>
+            <Dialog
+              open={this.state.alertOpen}
+              onRequestClose={this.handleAlertClose.bind(this)}
+              modal={true}
+              title={`Known cities`}
+              autoScrollBodyContent={true}
+              actions={[<FlatButton onClick={this.handleAlertClose.bind(this)} label="OK"/>]}
+            >
+              <ul>
+                <li>San Jose</li>
+                <li>Fremont</li>
+                <li>Fairfield</li>
+                <li>Fairfax</li>
+                <li>Saratoga</li>
+              </ul>
+            </Dialog>
         </Card>);
     }
 }

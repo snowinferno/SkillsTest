@@ -8,8 +8,14 @@ export default class TypeaheadInput extends Component {
     if (this.props.list.length > 0) {
       cities = (
         <ul style={{
-          position: 'relative',
-          top: '-1em',
+          position: 'absolute',
+          top: '1.85em',
+          left: '1em',
+          backgroundColor: 'white',
+          border: 'solid 1px #CCC',
+          borderTop: 'none',
+          padding: '0em 0.5em 0.25em 0.5em',
+          display: 'inline-block',
           listStyleType: 'none'
         }}>
           {this.props.list.map((city) => {
@@ -18,8 +24,9 @@ export default class TypeaheadInput extends Component {
         </ul>
       )
     }
-    return <div>
+    return <div style={{position: 'relative'}}>
       <TextField
+        value={this.props.value}
         hintText={this.props.hint}
         onChange={this.props.handleChange}
       />
@@ -30,6 +37,7 @@ export default class TypeaheadInput extends Component {
 
 TypeaheadInput.defaultProps = {
   hint: 'Start typing to see options',
+  value: '',
   list: [],
   handleChange: (evt) => {
     console.log(evt.target.value);

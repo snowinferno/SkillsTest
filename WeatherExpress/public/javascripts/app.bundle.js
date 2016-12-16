@@ -62138,7 +62138,8 @@
 	    _this.state = {
 	      query: '',
 	      cityList: [],
-	      weatherList: []
+	      weatherList: [],
+	      alertOpen: true
 	    };
 	    return _this;
 	  }
@@ -62148,12 +62149,13 @@
 	    value: function handleInputChange(evt) {
 	      var _this2 = this;
 
+	      this.setState({ query: evt.target.value });
 	      fetch('/weather/cities?q=' + evt.target.value, { credentials: 'same-origin' }).then(function (response) {
 	        return response.json();
 	      }).then(function (json) {
 	        _this2.setState({ cityList: json.items });
 	      }).catch(function (err) {
-	        document.write(JSON.stringify(err));
+	        console.error(err);
 	      });
 	    }
 	  }, {
@@ -62161,19 +62163,25 @@
 	    value: function handleItemSelect(zip) {
 	      var _this3 = this;
 
+	      this.setState({ query: '', cityList: [] });
 	      fetch('/weather/cities/' + zip).then(function (response) {
 	        return response.json();
 	      }).then(function (json) {
-	        console.log(json);
 	        _this3.setState({ weatherList: [].concat(_toConsumableArray(_this3.state.weatherList), [json.data]) });
 	      }).catch(function (err) {
-	        console.log('err', err);
-	        document.write(JSON.stringify(err));
+	        console.error(err);
 	      });
+	    }
+	  }, {
+	    key: 'handleAlertClose',
+	    value: function handleAlertClose() {
+	      this.setState({ alertOpen: false });
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
+	      var _this4 = this;
+
 	      return _react2.default.createElement(
 	        _materialUi.Card,
 	        null,
@@ -62184,75 +62192,121 @@
 	          _materialUi.CardText,
 	          null,
 	          _react2.default.createElement(_TypeaheadInput2.default, {
+	            value: this.state.query,
 	            hint: 'Start typing the name of a city.',
 	            list: this.state.cityList,
 	            handleChange: this.handleInputChange.bind(this),
 	            handleItemSelect: this.handleItemSelect.bind(this)
 	          }),
-	          this.state.weatherList.length > 0 && this.state.weatherList.map(function (weatherItem) {
-	            console.log(weatherItem);
+	          this.state.weatherList.length > 0 && this.state.weatherList.map(function (weatherItem, index) {
 	            return _react2.default.createElement(
 	              _materialUi.Paper,
 	              { key: weatherItem.city + '-' + weatherItem.zip,
 	                style: {
 	                  margin: '1em',
-	                  padding: '1em'
+	                  padding: '1em',
+	                  display: 'inline-block',
+	                  position: 'relative'
 	                }
 	              },
 	              _react2.default.createElement(
 	                'span',
+	                {
+	                  style: {
+	                    position: 'absolute',
+	                    top: '0.25em',
+	                    right: '0.5em',
+	                    cursor: 'pointer'
+	                  },
+	                  onClick: function onClick(evt) {
+	                    var weatherSet = [].concat(_toConsumableArray(_this4.state.weatherList.slice(0, index)), _toConsumableArray(_this4.state.weatherList.slice(index + 1)));
+	                    _this4.setState({ weatherList: weatherSet });
+	                  }
+	                },
+	                'x'
+	              ),
+	              _react2.default.createElement(
+	                'strong',
 	                null,
+	                weatherItem.name
+	              ),
+	              ' [',
+	              weatherItem.zip,
+	              ']',
+	              _react2.default.createElement(
+	                'div',
+	                { style: { display: 'table' } },
 	                _react2.default.createElement(
-	                  'strong',
-	                  null,
-	                  weatherItem.name
-	                ),
-	                ' [',
-	                weatherItem.zip,
-	                ']',
-	                _react2.default.createElement(
-	                  'table',
-	                  null,
+	                  'div',
+	                  { style: { display: 'table-row', fontWeight: 'bold' } },
 	                  _react2.default.createElement(
-	                    'thead',
-	                    null,
-	                    _react2.default.createElement(
-	                      'tr',
-	                      null,
-	                      _react2.default.createElement(
-	                        'th',
-	                        null,
-	                        'Temperature'
-	                      ),
-	                      _react2.default.createElement(
-	                        'th',
-	                        null,
-	                        'Description'
-	                      )
-	                    )
+	                    'div',
+	                    { style: { display: 'table-cell', paddingRight: '0.5em' } },
+	                    'Temperature'
 	                  ),
 	                  _react2.default.createElement(
-	                    'tbody',
-	                    null,
-	                    _react2.default.createElement(
-	                      'tr',
-	                      null,
-	                      _react2.default.createElement(
-	                        'td',
-	                        null,
-	                        '' + weatherItem.weather.temp.value + weatherItem.weather.temp.units
-	                      ),
-	                      _react2.default.createElement(
-	                        'td',
-	                        null,
-	                        weatherItem.weather.description
-	                      )
-	                    )
+	                    'div',
+	                    { style: { display: 'table-cell' } },
+	                    'Description'
+	                  )
+	                ),
+	                _react2.default.createElement(
+	                  'div',
+	                  { style: { display: 'table-row' } },
+	                  _react2.default.createElement(
+	                    'div',
+	                    { style: { display: 'table-cell', paddingRight: '0.5em' } },
+	                    '' + weatherItem.weather.temp.value + weatherItem.weather.temp.units
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { style: { display: 'table-cell' } },
+	                    weatherItem.weather.description
 	                  )
 	                )
 	              )
 	            );
 	          })
+	        ),
+	        _react2.default.createElement(
+	          _materialUi.Dialog,
+	          {
+	            open: this.state.alertOpen,
+	            onRequestClose: this.handleAlertClose.bind(this),
+	            modal: true,
+	            title: 'Known cities',
+	            autoScrollBodyContent: true,
+	            actions: [_react2.default.createElement(_materialUi.FlatButton, { onClick: this.handleAlertClose.bind(this), label: 'OK' })]
+	          },
+	          _react2.default.createElement(
+	            'ul',
+	            null,
+	            _react2.default.createElement(
+	              'li',
+	              null,
+	              'San Jose'
+	            ),
+	            _react2.default.createElement(
+	              'li',
+	              null,
+	              'Fremont'
+	            ),
+	            _react2.default.createElement(
+	              'li',
+	              null,
+	              'Fairfield'
+	            ),
+	            _react2.default.createElement(
+	              'li',
+	              null,
+	              'Fairfax'
+	            ),
+	            _react2.default.createElement(
+	              'li',
+	              null,
+	              'Saratoga'
+	            )
+	          )
 	        )
 	      );
 	    }
@@ -62314,8 +62368,14 @@
 	        cities = _react2.default.createElement(
 	          'ul',
 	          { style: {
-	              position: 'relative',
-	              top: '-1em',
+	              position: 'absolute',
+	              top: '1.85em',
+	              left: '1em',
+	              backgroundColor: 'white',
+	              border: 'solid 1px #CCC',
+	              borderTop: 'none',
+	              padding: '0em 0.5em 0.25em 0.5em',
+	              display: 'inline-block',
 	              listStyleType: 'none'
 	            } },
 	          this.props.list.map(function (city) {
@@ -62331,8 +62391,9 @@
 	      }
 	      return _react2.default.createElement(
 	        'div',
-	        null,
+	        { style: { position: 'relative' } },
 	        _react2.default.createElement(_materialUi.TextField, {
+	          value: this.props.value,
 	          hintText: this.props.hint,
 	          onChange: this.props.handleChange
 	        }),
@@ -62349,6 +62410,7 @@
 
 	TypeaheadInput.defaultProps = {
 	  hint: 'Start typing to see options',
+	  value: '',
 	  list: [],
 	  handleChange: function handleChange(evt) {
 	    console.log(evt.target.value);
