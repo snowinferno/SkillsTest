@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/cities', (req, res, next) => {
   if (!req.query.q) {
-    return res.json([]);
+    return res.json(cityData);
   }
   res.json({
     items: cityData.filter((city) => {
